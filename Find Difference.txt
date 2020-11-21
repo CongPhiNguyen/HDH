@@ -1,0 +1,29 @@
+for (int j = index; j < soLuong; j++)
+{
+	if (j + 1 < soLuong && pc[j].paTime == pc[j + 1].paTime)
+	{
+		continue;
+	}
+	else
+						{
+							for (int k = index; k <= j; k++)
+							{
+								pQueue.Push(pc[k]);
+							}
+							index = j + 1;
+						}
+					}
+Khác với cái này chỗ nào:
+
+int j = index;
+					while (j + 1 < soLuong && pc[j].paTime == pc[j + 1].paTime)
+					{
+						j++;
+					}
+					for (int k = index; k <= j; k++)
+					{
+						pQueue.Push(pc[k]);
+					}
+					index = j + 1;
+					
+					
