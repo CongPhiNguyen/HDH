@@ -1,4 +1,4 @@
-﻿#include<iostream>
+﻿#include <iostream>
 #include <string>
 using namespace std;
 
@@ -34,7 +34,8 @@ public:
 	}
 	~Queue()
 	{
-		delete p;
+		if(soLuong!=0)
+			delete p;
 	}
 	void Push(Process temp)
 	{
@@ -63,18 +64,11 @@ public:
 		else
 		{
 			Process res = p[0];
-			Process* t = new Process[soLuong-1];
 			for (int i = 1; i < soLuong; i++)
 			{
-				t[i-1] = p[i];
+				p[i-1] = p[i];
 			}
 			soLuong -= 1;
-			p = new Process[soLuong];
-			for (int i = 0; i < soLuong ; i++)
-			{
-				p[i] = t[i];
-			}
-			delete t;
 			return res;
 		}
 	}
@@ -359,9 +353,14 @@ public:
 	void RoundRobin()
 	{
 		Queue pQueue;
+		
 		//Process* Ketqua = new Process[soLuong];
 		Queue run;
 		float RRtime=0.f;
+		//Dùng cho cái chart
+		Queue chart;
+		float Time[100];
+		int m = 0;
 		//Sắp xếp các tiến trình theo arrival time
 		for (int i = 0; i < soLuong - 1; i++)
 		{
@@ -385,6 +384,9 @@ public:
 		cout << "pName   ArrTime    BurstTime         Start           TAT          Finish          Waiting          TimeLeft          Res\n";
 		float time = pc[0].paTime;
 		int index = 0;
+		//Dùng cho cái chart
+		Time[m] = time;
+		m++;
 
 		//Lấy các process ở thời điểm đầu tiên
 		while (index < soLuong && pc[index].paTime <= time)
@@ -408,6 +410,9 @@ public:
 				current.timeLeft -= RRtime;
 
 				time += RRtime;
+				//Dùng cho cái chart
+				Time[m] = time;
+				m++;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
 					pQueue.Push(pc[index]);
@@ -430,6 +435,9 @@ public:
 				current.resTime = current.staTime - current.paTime;
 
 				time += RRtime;
+				//Dùng cho cái chart
+				Time[m] = time;
+				m++;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
 					pQueue.Push(pc[index]);
@@ -450,6 +458,9 @@ public:
 				current.resTime = current.staTime - current.paTime;
 
 				time += current.timeLeft;
+				//Dùng cho cái chart
+				Time[m] = time;
+				m++;
 				current.timeLeft = 0;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
@@ -459,11 +470,12 @@ public:
 				run.Push(current);
 				current.Xuat();
 			}
+			chart.Push(current);
 		}
 		int i = 0;
 		while (run.isEmpty() != true)
 		{
-			pc[i] = run.PopAndMerge();
+			pc[i] = run.Pop();
 			i++;
 		}
 		//Tính avgWating và avgTAT
@@ -476,8 +488,26 @@ public:
 		avgWTime /= soLuong;
 		avgTATime /= soLuong;
 		cout << "\nRound Ronin:\nAverage Waiting Time: " << avgWTime << "\nAverage Turn Around Time: " << avgTATime << "\n";
-
-		cout << "Gantt chart:\n";
+		
+		cout << "\nGantt chart:\n";
+		Process k;
+		while (chart.isEmpty() != true)
+		{
+			k = chart.Pop();
+			printf("|--  %d  --",k.pname);
+			i++;
+		}
+		cout << "|\n";
+		for (int i = 0; i < m; i++)
+		{
+			if (Time[i] < 10)
+			{
+				cout << Time[i] << "         ";
+			}
+			else 
+				cout << Time[i] << "        ";
+		}
+		cout << "\n\n";
 
 	}
 	//Xong rồi
