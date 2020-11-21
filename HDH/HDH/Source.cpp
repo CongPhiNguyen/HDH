@@ -359,7 +359,9 @@ public:
 	void RoundRobin()
 	{
 		Queue pQueue;
-		Process* Ketqua = new Process[soLuong];
+		//Process* Ketqua = new Process[soLuong];
+		Queue run;
+		float RRtime=0.f;
 		//Sắp xếp các tiến trình theo arrival time
 		for (int i = 0; i < soLuong - 1; i++)
 		{
@@ -373,6 +375,109 @@ public:
 				}
 			}
 		}
+		cout << "Nhap RR time: ";
+		cin >> RRtime;
+		while (RRtime <= 0)
+		{
+			cout << "Nhap lai RR time: ";
+			cin >> RRtime;
+		}
+		cout << "pName   ArrTime    BurstTime         Start           TAT          Finish          Waiting          TimeLeft          Res\n";
+		float time = pc[0].paTime;
+		int index = 0;
+
+		//Lấy các process ở thời điểm đầu tiên
+		while (index < soLuong && pc[index].paTime <= time)
+		{
+			pQueue.Push(pc[index]);
+			index++;
+		}
+		Process current;
+		while (true)
+		{
+			if (pQueue.isEmpty() == true)
+				break;
+			current = pQueue.Pop();
+			if (current.timeLeft > RRtime)
+			{
+				//Cập nhật thông số của project
+				if (current.staTime == -1)
+				{
+					current.staTime = time;
+				}
+				current.timeLeft -= RRtime;
+
+				time += RRtime;
+				while (index < soLuong && pc[index].paTime <= time)
+				{
+					pQueue.Push(pc[index]);
+					index++;
+				}
+				pQueue.Push(current);
+				current.Xuat();
+			}
+			else if (current.timeLeft == RRtime)
+			{
+				//Cập nhật thông số của process
+				if (current.staTime == -1)
+				{
+					current.staTime = time;
+				}
+				current.timeLeft -= RRtime;
+				current.fiTime = time + RRtime;
+				current.taTime = current.fiTime - current.paTime;
+				current.wTime = current.fiTime - current.paTime - current.pbTime;
+				current.resTime = current.staTime - current.paTime;
+
+				time += RRtime;
+				while (index < soLuong && pc[index].paTime <= time)
+				{
+					pQueue.Push(pc[index]);
+					index++;
+				}
+				run.Push(current);
+				current.Xuat();
+			}
+			else if (current.timeLeft < RRtime)
+			{
+				if (current.staTime == -1)
+				{
+					current.staTime = time;
+				}
+				current.fiTime = time + current.timeLeft;
+				current.taTime = current.fiTime - current.paTime;
+				current.wTime = current.fiTime - current.paTime - current.pbTime;
+				current.resTime = current.staTime - current.paTime;
+
+				time += current.timeLeft;
+				current.timeLeft = 0;
+				while (index < soLuong && pc[index].paTime <= time)
+				{
+					pQueue.Push(pc[index]);
+					index++;
+				}
+				run.Push(current);
+				current.Xuat();
+			}
+		}
+		int i = 0;
+		while (run.isEmpty() != true)
+		{
+			pc[i] = run.PopAndMerge();
+			i++;
+		}
+		//Tính avgWating và avgTAT
+		for (int i = 0; i < soLuong; i++)
+		{
+			avgWTime += pc[i].wTime;
+			avgTATime += pc[i].taTime;
+			pc[i].resTime = pc[i].staTime - pc[i].paTime;
+		}
+		avgWTime /= soLuong;
+		avgTATime /= soLuong;
+		cout << "\nRound Ronin:\nAverage Waiting Time: " << avgWTime << "\nAverage Turn Around Time: " << avgTATime << "\n";
+
+		cout << "Gantt chart:\n";
 
 	}
 	//Xong rồi
@@ -420,24 +525,20 @@ public:
 				//cout << "Index: " << index << " So luong: " << soLuong<<"\n";
 				while (pQueue.isEmpty() != true)
 				{
-					while (pQueue.isEmpty() != true)
+					if (currentProcess.timeLeft == -1)
+						currentProcess = pQueue.PopAtMin2();
+					if (currentProcess.staTime == -1)
 					{
-						if (currentProcess.timeLeft == -1)
-							currentProcess = pQueue.PopAtMin2();
-						if (currentProcess.staTime == -1)
-						{
-							currentProcess.staTime = time;
-						}
-						time += currentProcess.timeLeft;
-						currentProcess.taTime = time - currentProcess.paTime;
-						currentProcess.fiTime = time;
-						currentProcess.timeLeft = 0;
-						currentProcess.wTime = currentProcess.fiTime - currentProcess.paTime - currentProcess.pbTime;
-						run.Push(currentProcess);
-						currentProcess.Xuat();
-						currentProcess.timeLeft = -1;
+						currentProcess.staTime = time;
 					}
-					break;
+					time += currentProcess.timeLeft;
+					currentProcess.taTime = time - currentProcess.paTime;
+					currentProcess.fiTime = time;
+					currentProcess.timeLeft = 0;
+					currentProcess.wTime = currentProcess.fiTime - currentProcess.paTime - currentProcess.pbTime;
+					run.Push(currentProcess);
+					currentProcess.Xuat();
+					currentProcess.timeLeft = -1;
 				}
 				break;
 			}
@@ -477,6 +578,17 @@ public:
 				if (pQueue.isEmpty() == true && currentProcess.timeLeft==-1)
 				{
 					time = pc[index].paTime;
+					int j = index;
+					while (j + 1 < soLuong && pc[j].paTime == pc[j + 1].paTime)
+					{
+						j++;
+					}
+					for (int k = index; k <= j; k++)
+					{
+						pQueue.Push(pc[k]);
+					}
+					index = j + 1;
+					currentProcess = pQueue.PopAtMin2();
 				}
 				//Nếu như có process mới nhảy vô thì cập nhật lại cái timmeleft
 				else
@@ -537,6 +649,39 @@ public:
 			}
 
 		}
+		if (currentProcess.timeLeft != -1)
+		{
+			if (currentProcess.staTime == -1)
+			{
+				currentProcess.staTime = time;
+			}
+			time += currentProcess.timeLeft;
+			currentProcess.taTime = time - currentProcess.paTime;
+			currentProcess.fiTime = time;
+			currentProcess.timeLeft = 0;
+			currentProcess.wTime = currentProcess.fiTime - currentProcess.paTime - currentProcess.pbTime;
+			run.Push(currentProcess);
+			currentProcess.Xuat();
+			currentProcess.timeLeft = -1;
+		}
+		//Không biết vòng while này cần không nữa
+		while (pQueue.isEmpty() != true)
+		{
+			if (currentProcess.timeLeft == -1)
+				currentProcess = pQueue.PopAtMin2();
+			if (currentProcess.staTime == -1)
+			{
+				currentProcess.staTime = time;
+			}
+			time += currentProcess.timeLeft;
+			currentProcess.taTime = time - currentProcess.paTime;
+			currentProcess.fiTime = time;
+			currentProcess.timeLeft = 0;
+			currentProcess.wTime = currentProcess.fiTime - currentProcess.paTime - currentProcess.pbTime;
+			run.Push(currentProcess);
+			currentProcess.Xuat();
+			currentProcess.timeLeft = -1;
+		}
 		int i = 0;
 		while (run.isEmpty() != true)
 		{
@@ -559,7 +704,7 @@ int main()
 {
 	Algorithm a;
 	a.Nhap();
-	a.ShortRemainingFirst();
+	a.RoundRobin();
 	a.Xuat();
 	system("PAUSE");
 }
