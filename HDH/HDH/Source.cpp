@@ -384,9 +384,6 @@ public:
 		cout << "pName   ArrTime    BurstTime         Start           TAT          Finish          Waiting          TimeLeft          Res\n";
 		float time = pc[0].paTime;
 		int index = 0;
-		//Dùng cho cái chart
-		Time[m] = time;
-		m++;
 
 		//Lấy các process ở thời điểm đầu tiên
 		while (index < soLuong && pc[index].paTime <= time)
@@ -408,11 +405,11 @@ public:
 					current.staTime = time;
 				}
 				current.timeLeft -= RRtime;
-
-				time += RRtime;
 				//Dùng cho cái chart
 				Time[m] = time;
 				m++;
+
+				time += RRtime;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
 					pQueue.Push(pc[index]);
@@ -433,11 +430,11 @@ public:
 				current.taTime = current.fiTime - current.paTime;
 				current.wTime = current.fiTime - current.paTime - current.pbTime;
 				current.resTime = current.staTime - current.paTime;
-
-				time += RRtime;
 				//Dùng cho cái chart
 				Time[m] = time;
 				m++;
+
+				time += RRtime;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
 					pQueue.Push(pc[index]);
@@ -456,11 +453,11 @@ public:
 				current.taTime = current.fiTime - current.paTime;
 				current.wTime = current.fiTime - current.paTime - current.pbTime;
 				current.resTime = current.staTime - current.paTime;
-
-				time += current.timeLeft;
 				//Dùng cho cái chart
 				Time[m] = time;
 				m++;
+
+				time += current.timeLeft;
 				current.timeLeft = 0;
 				while (index < soLuong && pc[index].paTime <= time)
 				{
@@ -469,6 +466,16 @@ public:
 				}
 				run.Push(current);
 				current.Xuat();
+
+				if (pQueue.isEmpty() == true)
+				{
+					time = pc[index].paTime;
+					while (index < soLuong && pc[index].paTime <= time)
+					{
+						pQueue.Push(pc[index]);
+						index++;
+					}
+				}
 			}
 			chart.Push(current);
 		}
@@ -478,6 +485,10 @@ public:
 			pc[i] = run.Pop();
 			i++;
 		}
+		//Dùng cho cái chart
+		Time[m] = time;
+		m++;
+
 		//Tính avgWating và avgTAT
 		for (int i = 0; i < soLuong; i++)
 		{
@@ -500,7 +511,11 @@ public:
 		cout << "|\n";
 		for (int i = 0; i < m; i++)
 		{
-			if (Time[i] < 10)
+			if (Time[i] >= 100)
+			{
+				cout << Time[i] << "       ";
+			}
+			else if (Time[i] < 10)
 			{
 				cout << Time[i] << "         ";
 			}
