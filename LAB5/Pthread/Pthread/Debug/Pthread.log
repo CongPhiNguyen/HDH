@@ -1,0 +1,11 @@
+﻿  Pthread.cpp
+  Source.cpp
+  Generating Code...
+Source.obj : error LNK2005: "void * __cdecl processA(void *)" (?processA@@YAPAXPAX@Z) already defined in Pthread.obj
+Source.obj : error LNK2005: "void * __cdecl processB(void *)" (?processB@@YAPAXPAX@Z) already defined in Pthread.obj
+Source.obj : error LNK2005: _main already defined in Pthread.obj
+Source.obj : error LNK2005: "int sells" (?sells@@3HA) already defined in Pthread.obj
+Source.obj : error LNK2005: "int products" (?products@@3HA) already defined in Pthread.obj
+Pthread.obj : error LNK2019: unresolved external symbol __imp__pthread_create referenced in function _main
+Source.obj : error LNK2001: unresolved external symbol __imp__pthread_create
+H:\Năm 2\Hệ điều hành\HDH\HDH\LAB5\Pthread\Debug\Pthread.exe : fatal error LNK1120: 1 unresolved externals

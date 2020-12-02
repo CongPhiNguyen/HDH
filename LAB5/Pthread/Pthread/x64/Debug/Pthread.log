@@ -1,0 +1,2 @@
+﻿Source.obj : error LNK2019: unresolved external symbol __imp_pthread_create referenced in function main
+H:\Năm 2\Hệ điều hành\HDH\HDH\LAB5\Pthread\x64\Debug\Pthread.exe : fatal error LNK1120: 1 unresolved externals

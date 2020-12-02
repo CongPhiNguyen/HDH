@@ -1,0 +1,10 @@
+Dùng thư viện semaphore.h thì phải có khai báo 1 cái RT
+Để biên dịch 
+	gcc -o phi phi.c - lpthread - lrt
+Biến semaphore sem_t 
+quan trọng là đặt sem_wait và sem_pos chỗ nào
+https://www.youtube.com/watch?v=0MA92wx4JkQ
+
+semaphore =0 thì bị đưa vào vùng block
+
+https://www.youtube.com/watch?v=7mZ7sii-xsw
