@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\HELLO\Desktop\HDH\HDH\Source.cpp(77,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\HELLO\Desktop\HDH\HDH\Source.cpp(198,21): warning C4018: '<': signed/unsigned mismatch
+  HDH.vcxproj -> C:\Users\HELLO\Desktop\HDH\Debug\HDH.exe
