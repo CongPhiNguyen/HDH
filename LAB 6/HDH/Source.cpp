@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <vector>
 using namespace std;
 int n;
 int a[1000];
@@ -8,7 +7,7 @@ int frames=0;
 int page[100] = { -1 };
 int pages[100][1000];
 int algo = 0;
-vector<int> pageFault;
+int pageFault[1000];
 int MainMenu()
 {
 	cout << "--- Page Replacement algorithm ---\n";
@@ -74,7 +73,7 @@ void Print()
 		cout << "\n";
 	}
 	int fault=0;
-	for (int i = 0; i < pageFault.size(); i++)
+	for (int i = 0; i < n; i++)
 	{
 		if (pageFault[i] == -1)
 		{
@@ -88,7 +87,6 @@ void Print()
 }
 void FIFO()
 {
-	pageFault.resize(n);
 	int index = 0;
 	for (int i = 0; i < frames; i++)
 	{
@@ -115,7 +113,6 @@ void FIFO()
 }
 void LRU()
 {
-	pageFault.resize(n);
 	int index = 0;
 	for (int i = 0; i < frames; i++)
 	{
@@ -160,7 +157,8 @@ int Page_to_Swap(int * timespan, int step)
 		if (page[i] == -1)
 			return i;
 	}
-	vector<int> notFound;
+	int notFound[100];
+	int num = 0;
 	int futureIndex[100];
 	for (int i = 0; i < frames; i++)
 	{
@@ -177,10 +175,11 @@ int Page_to_Swap(int * timespan, int step)
 		if (j >= n)
 		{
 			futureIndex[i] = -1;
-			notFound.push_back(i);
+			notFound[num]=i;
+			num++;
 		}
 	}
-	if (notFound.size() == 0)
+	if (num == 0)
 	{
 		int maxIndex = 0;
 		for (int i = 0; i < frames; i++)
@@ -195,7 +194,7 @@ int Page_to_Swap(int * timespan, int step)
 	else
 	{
 		int minIndex = notFound[0];
-		for (int i = 0; i < notFound.size(); i++)
+		for (int i = 0; i < num; i++)
 		{
 			if (timespan[notFound[i]] < timespan[minIndex])
 			{
@@ -208,7 +207,6 @@ int Page_to_Swap(int * timespan, int step)
 }
 void OPT()
 {
-	pageFault.resize(n);
 	// Khởi tạo các trang
 	for (int i = 0; i < n; i++)
 	{
